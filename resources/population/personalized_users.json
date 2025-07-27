@@ -1,0 +1,22 @@
+[
+    {
+        "username": "sahudy",
+        "name": "Sahudy Montenegro González",
+        "bio": "Criançada,\n\nme desculpem desde já, vou ter que cancelar a aula de amanhã. \n\nSei que serão muito infelizes com essa notícia ;)\n\nA aula prevista para amanhã é sobre o Redis, um in-memory KV store, bem simples de se iniciar. A aula está liberada no AVA, mas eu vou repor ela no último dia de aula, como previsto no calendário, já que não interfere na elaboração dos projetos.\n\nBoa semana!\n\nG5: apresentação na semana que vem :) acredito que esta decisão minha possa nterferir no andamento do projeto de vocês, me escrevam por email sobre suas preocupações, se houver alguma. \n\nAbs,"
+    },
+    {
+        "username": "ryansakurai",
+        "name": "Ryan Sakurai",
+        "bio": "Sou Ryan, pessoa não binária, mestiço de raízes misturadas e pulsantes que carrego com orgulho no sangue, medindo 1,64m de pura teimosia e inquietude, apaixonado por metal, esse gênero musical que traduz em riffs e guturais toda a intensidade que sinto dentro do peito. Fã incondicional de One Piece, me identifico profundamente com as jornadas de superação, liberdade e amizade que a obra ensina, e confesso que choro mais do que gostaria em alguns arcos épicos — sim, meu lado nerd não falha em se emocionar com boas histórias. Entre um headbang e outro, vivo imerso em universos de fantasia, tecnologia e cultura pop, buscando sempre me expressar com autenticidade e sem medo de abraçar o que sou, por mais contraditório ou peculiar que isso possa parecer aos olhos dos outros."
+    },
+    {
+        "username": "viniciuscastro",
+        "name": "Vini",
+        "bio": "Sou o Vini, um cara que domina o mundo das construções, mecânica e eletricidade, combinando força de pedreiro, precisão de mecânico e a paciência de eletricista — mesmo com minhas pernas finas, nada me segura quando o serviço chama. Sou funkeiro de alma, aquele que sente o batidão no corpo e na mente, mas não perco tempo com Instagram porque minha vida é muito real pra ficar postando tudo por aí. Faculdade? Ah, essa fica meio de lado, porque prefiro mil vezes acelerar na direção da minha rotina, dirigindo igual maluco pelas ruas e ainda surpreendendo com umas manobras de Python que aprendi na marra, misturando o mundo do código com a vida de obra e estrada. Minha vibe é fazer acontecer, mesmo que no ritmo acelerado e fora do convencional, porque ser do jeito que sou é o que me mantém firme e único."
+    },
+    {
+        "username": "caike_sant0s",
+        "name": "Caique (Hugo)",
+        "bio": "Eu sou Caike, mas pode me chamar de Hugo ou Cacá, apelidos que me acompanham nas minhas aventuras de rolezeiro nato, sempre buscando o próximo encontro, a próxima história pra contar. Tenho uma irmã que, apesar das brigas e zoações, é parceira de vida e cúmplice das melhores confusões. Andar de moto é mais que um hobby, é um estilo de vida, a sensação de liberdade que só quem já sentiu o vento no rosto entende. Sempre sigo meu lema: existem dois tipos de problemas — o meu e o dos outros — e prefiro focar no que posso resolver, sem me perder nas dores alheias. Ah, e não é pouca coisa não, sou o aluno preferido da professora Sahudy, aquela que sabe reconhecer quando alguém leva as coisas a sério, mesmo que eu esteja sempre no meio do rolê."
+    }
+]
