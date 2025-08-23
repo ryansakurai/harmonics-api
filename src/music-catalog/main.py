@@ -9,7 +9,6 @@ app = Flask("Music Catalog API")
 app.json.sort_keys = False
 app.url_map.strict_slashes = False
 
-
 app.register_blueprint(artists.bp, url_prefix = "/v1/artists")
 app.register_blueprint(releases.bp, url_prefix = "/v1/releases")
 app.register_blueprint(users.bp, url_prefix = "/v1/users")
