@@ -2,8 +2,8 @@
 Module for the 'releases/' route.
 """
 from flask import Blueprint, jsonify
-from configs import mongodb
-from configs.errors import Error
+from harmonics_api.configs import mongodb
+from harmonics_api.configs.errors import Error
 
 bp = Blueprint("releases", __name__)
 

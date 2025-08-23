@@ -3,9 +3,9 @@ Module for the 'recs/' route.
 """
 import random
 from flask import Blueprint, jsonify, request
-from configs import mongodb, neo4j
-from configs.errors import Error
-from utils import helper
+from harmonics_api.configs import mongodb, neo4j
+from harmonics_api.configs.errors import Error
+from harmonics_api.utils import helper
 
 bp = Blueprint("recs", __name__)
 

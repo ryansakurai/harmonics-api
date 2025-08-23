@@ -1,7 +1,7 @@
 """
 Module for the helper functions of the app.
 """
-from configs import mongodb, neo4j
+from harmonics_api.configs import mongodb, neo4j
 
 def exists(entity: str, *identifiers: str) -> bool:
     """

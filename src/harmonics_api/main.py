@@ -2,8 +2,8 @@
 Server for the Harmonics API
 """
 from flask import Flask
-from configs import mongodb, neo4j
-from routes import artists, releases, users, recs
+from harmonics_api.configs import mongodb, neo4j
+from harmonics_api.routes import artists, releases, users, recs
 
 app = Flask("Harmonics API")
 app.json.sort_keys = False
