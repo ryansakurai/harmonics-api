@@ -1,11 +1,11 @@
 """
-Server for the music catalog API
+Server for the Harmonics API
 """
 from flask import Flask
 from configs import mongodb, neo4j
 from routes import artists, releases, users, recs
 
-app = Flask("Music Catalog API")
+app = Flask("Harmonics API")
 app.json.sort_keys = False
 app.url_map.strict_slashes = False
 
