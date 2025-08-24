@@ -5,9 +5,9 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "harmonics-api"
 version = "1.0"
-description = "A music recommendation API using MongoDB and Neo4j"
+description = "API for a music catalog with social media and recommendation features."
 readme = "README.md"
-license = "MIT AND (Apache-2.0 OR BSD-2-Clause)"
+license = "MIT"
 license-files = ["LICENSE"]
 authors = [
     { name = "Caike dos Santos", email = "caikevsantos@gmail.com" },
