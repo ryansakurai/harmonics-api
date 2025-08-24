@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools >= 77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "harmonics-api"
+version = "1.0"
+description = "A music recommendation API using MongoDB and Neo4j"
+readme = "README.md"
+license = "MIT AND (Apache-2.0 OR BSD-2-Clause)"
+license-files = ["LICENSE"]
+authors = [
+    { name = "Caike dos Santos", email = "caikevsantos@gmail.com" },
+    { name = "Ryan Sakurai", email = "ryansakurai03@gmail.com" },
+    { name = "Vinicius Castro", email = "vinisilvacastro71@gmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "Flask==3.1.2",
+    "neo4j==5.28.2",
+    "pymongo==4.14.1",
+    "python-dotenv==1.1.1"
+]
+
+[project.optional-dependencies]
+population = [
+    "Faker==37.5.3",
+    "google-genai==1.31.0",
+    "ipykernel==6.30.1",
+    "numpy==2.3.2",
+    "requests==2.32.5",
+    "spotipy==2.25.1"
+]
+
+[project.urls]
+repository = "https://github.com/ryansakurai/harmonics-api"
+
+[project.scripts]
+harmonics-api = "harmonics_api.main:main"
