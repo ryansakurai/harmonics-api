@@ -13,10 +13,10 @@ API for a music catalog with social media and recommendation features.
     - [Releases](#releases)
     - [Users](#users)
     - [Recommendations](#recommendations)
-- [Schemas](#schemas)
-    - [MongoDB](#mongodb)
-    - [Neo4j](#neo4j)
-- [Data Population](#data-population)
+- [Databases](#databases)
+    - [MongoDB Schemas](#mongodb-schemas)
+    - [Neo4j Schemas](#neo4j-schemas)
+    - [Data Population](#data-population)
 - [Authors](#authors)
 
 ## Features
