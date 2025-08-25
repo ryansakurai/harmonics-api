@@ -79,7 +79,7 @@ def get_artist_recs_by_genre(username):
 
     return jsonify(response), 200
 
-@bp.route("/<username>/releases/friends", methods = ["GET"])
+@bp.route("/<username>/releases", methods = ["GET"])
 def get_release_recs_by_friends(username):
     """
     Endpoint for getting release recommendations by friends' positive reviews.
