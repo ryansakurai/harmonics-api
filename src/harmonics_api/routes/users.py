@@ -45,7 +45,8 @@ def get_user(username):
 
     user_results = tuple(user_cursor)
     if not user_results:
-        return Error.USER_NOT_FOUND.get_response(username = username)
+        body, code = Error.USER_NOT_FOUND.response(username = username)
+        return jsonify(body), code
 
     return jsonify(user_results[0]), 200
 
@@ -71,7 +72,8 @@ def get_user_friends(username):
 
     user_results = tuple(user_cursor)
     if not user_results:
-        return Error.USER_NOT_FOUND.get_response(username = username)
+        body, code = Error.USER_NOT_FOUND.response(username = username)
+        return jsonify(body), code
 
     return jsonify(user_results[0]), 200
 
@@ -97,7 +99,8 @@ def get_user_ratings(username):
 
     user_results = tuple(user_cursor)
     if not user_results:
-        return Error.USER_NOT_FOUND.get_response(username = username)
+        body, code = Error.USER_NOT_FOUND.response(username = username)
+        return jsonify(body), code
 
     return jsonify(user_results[0]), 200
 
@@ -123,7 +126,8 @@ def get_user_follows(username):
 
     user_results = tuple(user_cursor)
     if not user_results:
-        return Error.USER_NOT_FOUND.get_response(username = username)
+        body, code = Error.USER_NOT_FOUND.response(username = username)
+        return jsonify(body), code
 
     return jsonify(user_results[0]), 200
 
@@ -134,9 +138,11 @@ def register_user():
     """
     body = request.get_json()
     if not body or "username" not in body:
-        return Error.PROPERTY_NOT_PROVIDED.get_response(property = "username")
+        body, code = Error.PROPERTY_NOT_PROVIDED.response(property = "username")
+        return jsonify(body), code
     if "password" not in body:
-        return Error.PROPERTY_NOT_PROVIDED.get_response(property = "password")
+        body, code = Error.PROPERTY_NOT_PROVIDED.response(property = "password")
+        return jsonify(body), code
 
     username = body["username"]
     password = body["password"]
@@ -144,7 +150,8 @@ def register_user():
     bio = body.get("bio")
 
     if helper.exists("user", username):
-        return Error.USER_ALREADY_EXISTS.get_response(username = username)
+        body, code = Error.USER_ALREADY_EXISTS.response(username = username)
+        return jsonify(body), code
 
     user = {}
     user["username"] = username
@@ -184,7 +191,8 @@ def delete_user(username):
         },
     )
     if not user:
-        return Error.USER_NOT_FOUND.get_response(username = username)
+        body, code = Error.USER_NOT_FOUND.response(username = username)
+        return jsonify(body), code
 
     for friend in user["friends"]:
         mongodb.db.users.update_one(
@@ -248,7 +256,8 @@ def update_user(username):
     body = request.get_json()
 
     if not helper.exists("user", username):
-        return Error.USER_NOT_FOUND.get_response(username = username)
+        body, code = Error.USER_NOT_FOUND.response(username = username)
+        return jsonify(body), code
 
     update_ops = {}
     unset_ops = {}
@@ -272,7 +281,8 @@ def update_user(username):
             unset_ops["bio"] = True
 
     if not update_ops and not unset_ops:
-        return Error.NO_VALID_FIELDS.get_response()
+        body, code = Error.NO_VALID_FIELDS.response()
+        return jsonify(body), code
 
     update_doc = {}
     if update_ops:
@@ -296,15 +306,18 @@ def rate_release(username):
     """
     body = request.get_json()
     if not body or "id" not in body:
-        return Error.PROPERTY_NOT_PROVIDED.get_response(property = "id")
+        body, code = Error.PROPERTY_NOT_PROVIDED.response(property = "id")
+        return jsonify(body), code
     if "rating" not in body:
-        return Error.PROPERTY_NOT_PROVIDED.get_response(property = "rating")
+        body, code = Error.PROPERTY_NOT_PROVIDED.response(property = "rating")
+        return jsonify(body), code
 
     release_id = body["id"]
     rating = body["rating"]
 
     if not helper.exists("user", username):
-        return Error.USER_NOT_FOUND.get_response(username = username)
+        body, code = Error.USER_NOT_FOUND.response(username = username)
+        return jsonify(body), code
 
     release_cursor = mongodb.db.artists.aggregate([
         {
@@ -332,15 +345,17 @@ def rate_release(username):
 
     release_results = tuple(release_cursor)
     if not release_results:
-        return Error.RELEASE_NOT_FOUND.get_response(id = release_id)
+        body, code = Error.RELEASE_NOT_FOUND.response(id = release_id)
+        return jsonify(body), code
 
     release: dict = release_results[0]
 
     if helper.exists("rating", username, release_id):
-        return Error.RATING_ALREADY_EXISTS.get_response(
+        body, code = Error.RATING_ALREADY_EXISTS.response(
             username = username,
             release_id = release_id,
         )
+        return jsonify(body), code
 
     mongodb.db.users.update_one(
         {
@@ -392,14 +407,17 @@ def unrate_release(username, release_id):
     Endpoint for removing a rating from a user and release.
     """
     if not helper.exists("user", username):
-        return Error.USER_NOT_FOUND.get_response(username = username)
+        body, code = Error.USER_NOT_FOUND.response(username = username)
+        return jsonify(body), code
     if not helper.exists("release", release_id):
-        return Error.RELEASE_NOT_FOUND.get_response(id = release_id)
+        body, code = Error.RELEASE_NOT_FOUND.response(id = release_id)
+        return jsonify(body), code
     if not helper.exists("rating", username, release_id):
-        return Error.RATING_NOT_FOUND.get_response(
+        body, code = Error.RATING_NOT_FOUND.response(
             release_id = release_id,
             username = username,
         )
+        return jsonify(body), code
 
     mongodb.db.users.update_one(
         {
@@ -445,11 +463,13 @@ def follow_artist(username):
     """
     body = request.get_json()
     if not body or "id" not in body:
-        return Error.PROPERTY_NOT_PROVIDED.get_response(property = "id")
+        body, code = Error.PROPERTY_NOT_PROVIDED.response(property = "id")
+        return jsonify(body), code
     artist_id = body["id"]
 
     if not helper.exists("user", username):
-        return Error.USER_NOT_FOUND.get_response(username = username)
+        body, code = Error.USER_NOT_FOUND.response(username = username)
+        return jsonify(body), code
 
     artist = mongodb.db.artists.find_one(
         {
@@ -461,13 +481,15 @@ def follow_artist(username):
         },
     )
     if not artist:
-        return Error.ARTIST_NOT_FOUND.get_response(id = artist_id)
+        body, code = Error.ARTIST_NOT_FOUND.response(id = artist_id)
+        return jsonify(body), code
 
     if helper.exists("follow", username, artist_id):
-        return Error.FOLLOW_ALREADY_EXISTS.get_response(
+        body, code = Error.FOLLOW_ALREADY_EXISTS.response(
             username = username,
             artist_id = artist_id,
         )
+        return jsonify(body), code
 
     mongodb.db.users.update_one(
         {
@@ -512,14 +534,17 @@ def unfollow_artist(username, artist_id):
     Endpoint for unfollowing an artist.
     """
     if not helper.exists("user", username):
-        return Error.USER_NOT_FOUND.get_response(username = username)
+        body, code = Error.USER_NOT_FOUND.response(username = username)
+        return jsonify(body), code
     if not helper.exists("artist", artist_id):
-        return Error.ARTIST_NOT_FOUND.get_response(id = artist_id)
+        body, code = Error.ARTIST_NOT_FOUND.response(id = artist_id)
+        return jsonify(body), code
     if not helper.exists("follow", username, artist_id):
-        return Error.FOLLOW_NOT_FOUND.get_response(
+        body, code = Error.FOLLOW_NOT_FOUND.response(
             artist_id = artist_id,
             username = username,
         )
+        return jsonify(body), code
 
     mongodb.db.users.update_one(
         {
@@ -563,18 +588,22 @@ def befriend_user(username):
     """
     body = request.get_json()
     if not body or "username" not in body:
-        return Error.PROPERTY_NOT_PROVIDED.get_response(property = "username")
+        body, code = Error.PROPERTY_NOT_PROVIDED.response(property = "username")
+        return jsonify(body), code
 
     friend_username = body["username"]
     if not helper.exists("user", username):
-        return Error.USER_NOT_FOUND.get_response(username = username)
+        body, code = Error.USER_NOT_FOUND.response(username = username)
+        return jsonify(body), code
     if not helper.exists("user", friend_username):
-        return Error.USER_NOT_FOUND.get_response(username = friend_username)
+        body, code = Error.USER_NOT_FOUND.response(username = friend_username)
+        return jsonify(body), code
     if helper.exists("friendship", username, friend_username):
-        return Error.FRIENDSHIP_ALREADY_EXISTS.get_response(
+        body, code = Error.FRIENDSHIP_ALREADY_EXISTS.response(
             username1 = username,
             username2 = friend_username,
         )
+        return jsonify(body), code
 
     mongodb.db.users.update_one(
         {
@@ -617,14 +646,17 @@ def unfriend_user(username, friend_username):
     Endpoint for removing a friend.
     """
     if not helper.exists("user", username):
-        return Error.USER_NOT_FOUND.get_response(username = username)
+        body, code = Error.USER_NOT_FOUND.response(username = username)
+        return jsonify(body), code
     if not helper.exists("user", friend_username):
-        return Error.USER_NOT_FOUND.get_response(username = friend_username)
+        body, code = Error.USER_NOT_FOUND.response(username = friend_username)
+        return jsonify(body), code
     if not helper.exists("friendship", username, friend_username):
-        return Error.FRIENDSHIP_NOT_FOUND.get_response(
+        body, code = Error.FRIENDSHIP_NOT_FOUND.response(
             username1 = username,
             username2 = friend_username,
         )
+        return jsonify(body), code
 
     mongodb.db.users.update_one(
         {

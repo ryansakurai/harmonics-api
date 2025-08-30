@@ -15,7 +15,8 @@ def get_artist_recs_by_genre(username):
     Endpoint for getting artist recommendations by genre.
     """
     if not helper.exists("user", username):
-        return Error.USER_NOT_FOUND.get_response(username = username)
+        body, code = Error.USER_NOT_FOUND.response(username = username)
+        return jsonify(body), code
 
     genre_result = neo4j.driver.execute_query(
         """
@@ -29,7 +30,8 @@ def get_artist_recs_by_genre(username):
     )
 
     if not genre_result.records:
-        return Error.NO_GENRE_DATA_FOUND.get_response(username=username)
+        body, code = Error.NO_GENRE_DATA_FOUND.response(username=username)
+        return jsonify(body), code
 
     most_common_genre = genre_result.records[0]["genre"]
 
@@ -47,10 +49,11 @@ def get_artist_recs_by_genre(username):
         username=username,
     )
     if not records:
-        return Error.ARTIST_RECS_NOT_FOUND.get_response(
+        body, code = Error.ARTIST_RECS_NOT_FOUND.response(
             username=username,
             genre=most_common_genre,
         )
+        return jsonify(body), code
 
     selected_artist_id = random.choice(records)["id"]
 
@@ -85,7 +88,8 @@ def get_release_recs_by_friends(username):
     Endpoint for getting release recommendations by friends' positive reviews.
     """
     if not helper.exists("user", username):
-        return Error.USER_NOT_FOUND.get_response(username=username)
+        body, code = Error.USER_NOT_FOUND.response(username=username)
+        return jsonify(body), code
 
     friends_rating = neo4j.driver.execute_query(
         """
@@ -106,7 +110,8 @@ def get_release_recs_by_friends(username):
             "rating": record["rating"]
         })
     if not results:
-        return Error.NO_FRIENDS_RATINGS_FOUND.get_response()
+        body, code = Error.NO_FRIENDS_RATINGS_FOUND.response()
+        return jsonify(body), code
 
     result = random.choice(results)
 
@@ -157,18 +162,21 @@ def get_friend_recs(username):
     """
     by = request.args.get("by", type = str)
     if not by:
-        return Error.NO_QUERY_PARAMETER.get_response(
+        body, code = Error.NO_QUERY_PARAMETER.response(
             parameter="by",
         )
+        return jsonify(body), code
 
     valid_methods = ["genre", "reviews"]
     if by not in valid_methods:
-        return Error.INVALID_REC_METHOD.get_response(
+        body, code = Error.INVALID_REC_METHOD.response(
             method=by,
         )
+        return jsonify(body), code
 
     if not helper.exists("user", username):
-        return Error.USER_NOT_FOUND.get_response(username=username)
+        body, code = Error.USER_NOT_FOUND.response(username=username)
+        return jsonify(body), code
 
     if by == "genre":
         return get_friend_recs_by_genre(username)
@@ -190,7 +198,8 @@ def get_friend_recs_by_genre(username):
     )
 
     if not genre_result.records:
-        return Error.NO_GENRE_DATA_FOUND.get_response(username = username)
+        body, code = Error.NO_GENRE_DATA_FOUND.response(username = username)
+        return jsonify(body), code
 
     most_common_genre = genre_result.records[0]["genre"]
 
@@ -210,7 +219,8 @@ def get_friend_recs_by_genre(username):
     )
 
     if not recs_result.records:
-        return Error.NO_FRIEND_RECS_FOUND.get_response(username=username, genre=most_common_genre)
+        body, code = Error.NO_FRIEND_RECS_FOUND.response(username=username, genre=most_common_genre)
+        return jsonify(body), code
 
     selected_username = random.choice(recs_result.records)["recommended_user"]
 
@@ -263,7 +273,8 @@ def get_friend_recs_by_reviews(username):
         rated_releases.append(record["release_id"])
 
     if not rated_releases:
-        return Error.NO_RATINGS_FOUND.get_response(username = username)
+        body, code = Error.NO_RATINGS_FOUND.response(username = username)
+        return jsonify(body), code
 
     selected_release = random.choice(rated_releases)
 
@@ -285,10 +296,11 @@ def get_friend_recs_by_reviews(username):
     )
 
     if not rated_reviews.records:
-        return Error.NO_FRIEND_RECS_FOUND.get_response(
+        body, code = Error.NO_FRIEND_RECS_FOUND.response(
             username = username,
             release_id = selected_release,
         )
+        return jsonify(body), code
 
     recommended_user = random.choice(rated_reviews.records)
     selected_username = recommended_user["username"]
@@ -311,7 +323,8 @@ def get_friend_recs_by_reviews(username):
     )
 
     if not user_details:
-        return Error.USER_NOT_FOUND.get_response(username=selected_username)
+        body, code = Error.USER_NOT_FOUND.response(username=selected_username)
+        return jsonify(body), code
 
     release_cursor = mongodb.db.artists.aggregate([
         {

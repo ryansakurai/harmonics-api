@@ -54,7 +54,8 @@ def get_release(release_id):
 
     release_results = tuple(release_cursor)
     if not release_results:
-        return Error.RELEASE_NOT_FOUND.get_response(id = release_id)
+        body, code = Error.RELEASE_NOT_FOUND.response(id = release_id)
+        return jsonify(body), code
 
     return jsonify(release_results[0]), 200
 
@@ -92,6 +93,7 @@ def get_release_ratings(release_id):
 
     release_results = tuple(release_cursor)
     if not release_results:
-        return Error.RELEASE_NOT_FOUND.get_response(id = release_id)
+        body, code = Error.RELEASE_NOT_FOUND.response(id = release_id)
+        return jsonify(body), code
 
     return jsonify(release_results[0]), 200

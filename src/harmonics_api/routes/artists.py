@@ -77,7 +77,8 @@ def get_artist(artist_id):
 
     artists_retrieved = tuple(artist_cursor)
     if not artists_retrieved:
-        return Error.ARTIST_NOT_FOUND.get_response(id = artist_id)
+        body, code = Error.ARTIST_NOT_FOUND.response(id = artist_id)
+        return jsonify(body), code
 
     return jsonify(artists_retrieved[0]), 200
 
@@ -145,6 +146,7 @@ def get_artist_tracks(artist_id):
 
     tracks_results = tuple(tracks_cursor)
     if not tracks_results:
-        return Error.ARTIST_NOT_FOUND.get_response(id = artist_id)
+        body, code =  Error.ARTIST_NOT_FOUND.response(id = artist_id)
+        return jsonify(body), code
 
     return jsonify(tracks_results[0]), 200
