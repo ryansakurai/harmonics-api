@@ -8,7 +8,7 @@ from neo4j import GraphDatabase
 dotenv.load_dotenv()
 
 driver = GraphDatabase.driver(
-    "neo4j+s://10ab7e50.databases.neo4j.io",
+    "neo4j+s://b6ee319f.databases.neo4j.io",
     auth = (
         os.getenv("NEO4J_USERNAME"),
         os.getenv("NEO4J_PASSWORD"),

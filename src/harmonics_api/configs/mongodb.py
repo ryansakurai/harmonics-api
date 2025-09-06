@@ -10,8 +10,8 @@ dotenv.load_dotenv()
 
 client = MongoClient(
     (f"mongodb+srv://{os.getenv('MONGODB_USERNAME')}:{os.getenv('MONGODB_PASSWORD')}"
-    "@projeto-bd.9scqvyv.mongodb.net/"
-    "?retryWrites=true&w=majority&appName=projeto-bd"),
+    "@harmonics.qmhawyc.mongodb.net/"
+     "?retryWrites=true&w=majority&appName=harmonics"),
     server_api = ServerApi(
         version = "1",
         strict = True,
