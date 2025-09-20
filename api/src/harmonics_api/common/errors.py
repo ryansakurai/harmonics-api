@@ -1,13 +1,16 @@
 """
 Module for application error definitions.
 """
+
 from enum import Enum
 from typing import Dict, Tuple
+
 
 class Error(Enum):
     """
     Enumeration of application error codes with their details.
     """
+
     # Entity not found errors
     ARTIST_NOT_FOUND = (
         {
@@ -72,9 +75,7 @@ class Error(Enum):
     ARTIST_RECS_NOT_FOUND = (
         {
             "code": "ArtistRecsNotFound",
-            "message": (
-                "No recommendations for the user with username '{username}'."
-            ),
+            "message": ("No recommendations for the user with username '{username}'."),
         },
         404,
     )

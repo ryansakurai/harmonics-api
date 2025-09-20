@@ -1,147 +1,162 @@
 """
 Module for the 'users/' route.
 """
+
 import hashlib
+
 from flask import Blueprint, jsonify, request
-from harmonics_api.configs import mongodb, neo4j
-from harmonics_api.configs.errors import Error
-from harmonics_api.utils import helper
+
+from ..common import helper, mongodb, neo4j
+from ..common.errors import Error
 
 bp = Blueprint("users", __name__)
 
-@bp.route("/<username>", methods = ["GET"])
+
+@bp.route("/<username>", methods=["GET"])
 def get_user(username):
     """
     Endpoint for getting the user resource by username.
     """
-    user_cursor = mongodb.db.users.aggregate([
-        {
-            "$match": {
-                "username": username,
-            },
-        },
-        {
-            "$project": {
-                "_id": False,
-                "username": True,
-                "name": {
-                    "$ifNull": ["$name", None],
-                },
-                "bio": {
-                    "$ifNull": ["$bio", None],
-                },
-                "qt_friends": {
-                    "$size": "$friends",
-                },
-                "qt_ratings": {
-                    "$size": "$ratings",
-                },
-                "qt_follows": {
-                    "$size": "$follows",
+    user_cursor = mongodb.db.users.aggregate(
+        [
+            {
+                "$match": {
+                    "username": username,
                 },
             },
-        },
-    ])
+            {
+                "$project": {
+                    "_id": False,
+                    "username": True,
+                    "name": {
+                        "$ifNull": ["$name", None],
+                    },
+                    "bio": {
+                        "$ifNull": ["$bio", None],
+                    },
+                    "qt_friends": {
+                        "$size": "$friends",
+                    },
+                    "qt_ratings": {
+                        "$size": "$ratings",
+                    },
+                    "qt_follows": {
+                        "$size": "$follows",
+                    },
+                },
+            },
+        ]
+    )
 
     user_results = tuple(user_cursor)
     if not user_results:
-        body, code = Error.USER_NOT_FOUND.response(username = username)
+        body, code = Error.USER_NOT_FOUND.response(username=username)
         return jsonify(body), code
 
     return jsonify(user_results[0]), 200
 
-@bp.route("/<username>/friends", methods = ["GET"])
+
+@bp.route("/<username>/friends", methods=["GET"])
 def get_user_friends(username):
     """
     Endpoint for getting all friends of a user.
     """
-    user_cursor = mongodb.db.users.aggregate([
-        {
-            "$match": {
-                "username": username,
-            }
-        },
-        {
-            "$project": {
-                "_id": False,
-                "username": True,
-                "items": "$friends",
+    user_cursor = mongodb.db.users.aggregate(
+        [
+            {
+                "$match": {
+                    "username": username,
+                }
             },
-        },
-    ])
+            {
+                "$project": {
+                    "_id": False,
+                    "username": True,
+                    "items": "$friends",
+                },
+            },
+        ]
+    )
 
     user_results = tuple(user_cursor)
     if not user_results:
-        body, code = Error.USER_NOT_FOUND.response(username = username)
+        body, code = Error.USER_NOT_FOUND.response(username=username)
         return jsonify(body), code
 
     return jsonify(user_results[0]), 200
 
-@bp.route("/<username>/ratings", methods = ["GET"])
+
+@bp.route("/<username>/ratings", methods=["GET"])
 def get_user_ratings(username):
     """
     Endpoint for getting all ratings of a user.
     """
-    user_cursor = mongodb.db.users.aggregate([
-        {
-            "$match": {
-                "username": username,
-            }
-        },
-        {
-            "$project": {
-                "_id": False,
-                "username": True,
-                "items": "$ratings",
+    user_cursor = mongodb.db.users.aggregate(
+        [
+            {
+                "$match": {
+                    "username": username,
+                }
             },
-        },
-    ])
+            {
+                "$project": {
+                    "_id": False,
+                    "username": True,
+                    "items": "$ratings",
+                },
+            },
+        ]
+    )
 
     user_results = tuple(user_cursor)
     if not user_results:
-        body, code = Error.USER_NOT_FOUND.response(username = username)
+        body, code = Error.USER_NOT_FOUND.response(username=username)
         return jsonify(body), code
 
     return jsonify(user_results[0]), 200
 
-@bp.route("/<username>/follows", methods = ["GET"])
+
+@bp.route("/<username>/follows", methods=["GET"])
 def get_user_follows(username):
     """
     Endpoint for getting all artists followed by a user.
     """
-    user_cursor = mongodb.db.users.aggregate([
-        {
-            "$match": {
-                "username": username,
-            }
-        },
-        {
-            "$project": {
-                "_id": False,
-                "username": True,
-                "items": "$follows",
+    user_cursor = mongodb.db.users.aggregate(
+        [
+            {
+                "$match": {
+                    "username": username,
+                }
             },
-        },
-    ])
+            {
+                "$project": {
+                    "_id": False,
+                    "username": True,
+                    "items": "$follows",
+                },
+            },
+        ]
+    )
 
     user_results = tuple(user_cursor)
     if not user_results:
-        body, code = Error.USER_NOT_FOUND.response(username = username)
+        body, code = Error.USER_NOT_FOUND.response(username=username)
         return jsonify(body), code
 
     return jsonify(user_results[0]), 200
 
-@bp.route("/", methods = ["POST"])
+
+@bp.route("/", methods=["POST"])
 def register_user():
     """
     Endpoint for registering a new user.
     """
     body = request.get_json()
     if not body or "username" not in body:
-        body, code = Error.PROPERTY_NOT_PROVIDED.response(property = "username")
+        body, code = Error.PROPERTY_NOT_PROVIDED.response(property="username")
         return jsonify(body), code
     if "password" not in body:
-        body, code = Error.PROPERTY_NOT_PROVIDED.response(property = "password")
+        body, code = Error.PROPERTY_NOT_PROVIDED.response(property="password")
         return jsonify(body), code
 
     username = body["username"]
@@ -150,7 +165,7 @@ def register_user():
     bio = body.get("bio")
 
     if helper.exists("user", username):
-        body, code = Error.USER_ALREADY_EXISTS.response(username = username)
+        body, code = Error.USER_ALREADY_EXISTS.response(username=username)
         return jsonify(body), code
 
     user = {}
@@ -170,12 +185,13 @@ def register_user():
         """
         MERGE (u:User {username: $username})
         """,
-        username = username
+        username=username,
     )
 
     return jsonify(), 201
 
-@bp.route("/<username>", methods = ["DELETE"])
+
+@bp.route("/<username>", methods=["DELETE"])
 def delete_user(username):
     """
     Endpoint for deleting a user account.
@@ -191,7 +207,7 @@ def delete_user(username):
         },
     )
     if not user:
-        body, code = Error.USER_NOT_FOUND.response(username = username)
+        body, code = Error.USER_NOT_FOUND.response(username=username)
         return jsonify(body), code
 
     for friend in user["friends"]:
@@ -243,12 +259,13 @@ def delete_user(username):
         MATCH (u:User {username: $username})
         DETACH DELETE u
         """,
-        username = username,
+        username=username,
     )
 
     return jsonify(), 200
 
-@bp.route("/<username>", methods = ["PATCH"])
+
+@bp.route("/<username>", methods=["PATCH"])
 def update_user(username):
     """
     Endpoint for updating user data (password, name, bio).
@@ -256,7 +273,7 @@ def update_user(username):
     body = request.get_json()
 
     if not helper.exists("user", username):
-        body, code = Error.USER_NOT_FOUND.response(username = username)
+        body, code = Error.USER_NOT_FOUND.response(username=username)
         return jsonify(body), code
 
     update_ops = {}
@@ -299,61 +316,64 @@ def update_user(username):
 
     return jsonify(), 200
 
-@bp.route("/<username>/ratings", methods = ["POST"])
+
+@bp.route("/<username>/ratings", methods=["POST"])
 def rate_release(username):
     """
     Endpoint for adding a rating to a user and release.
     """
     body = request.get_json()
     if not body or "id" not in body:
-        body, code = Error.PROPERTY_NOT_PROVIDED.response(property = "id")
+        body, code = Error.PROPERTY_NOT_PROVIDED.response(property="id")
         return jsonify(body), code
     if "rating" not in body:
-        body, code = Error.PROPERTY_NOT_PROVIDED.response(property = "rating")
+        body, code = Error.PROPERTY_NOT_PROVIDED.response(property="rating")
         return jsonify(body), code
 
     release_id = body["id"]
     rating = body["rating"]
 
     if not helper.exists("user", username):
-        body, code = Error.USER_NOT_FOUND.response(username = username)
+        body, code = Error.USER_NOT_FOUND.response(username=username)
         return jsonify(body), code
 
-    release_cursor = mongodb.db.artists.aggregate([
-        {
-            "$match": {
-                "releases.id": release_id,
+    release_cursor = mongodb.db.artists.aggregate(
+        [
+            {
+                "$match": {
+                    "releases.id": release_id,
+                },
             },
-        },
-        {
-            "$unwind": "$releases",
-        },
-        {
-            "$match": {
-                "releases.id": release_id,
+            {
+                "$unwind": "$releases",
             },
-        },
-        {
-            "$project": {
-                "_id": False,
-                "id": "$releases.id",
-                "artist": "$name",
-                "name": "$releases.name",
-            }
-        }
-    ])
+            {
+                "$match": {
+                    "releases.id": release_id,
+                },
+            },
+            {
+                "$project": {
+                    "_id": False,
+                    "id": "$releases.id",
+                    "artist": "$name",
+                    "name": "$releases.name",
+                }
+            },
+        ]
+    )
 
     release_results = tuple(release_cursor)
     if not release_results:
-        body, code = Error.RELEASE_NOT_FOUND.response(id = release_id)
+        body, code = Error.RELEASE_NOT_FOUND.response(id=release_id)
         return jsonify(body), code
 
     release: dict = release_results[0]
 
     if helper.exists("rating", username, release_id):
         body, code = Error.RATING_ALREADY_EXISTS.response(
-            username = username,
-            release_id = release_id,
+            username=username,
+            release_id=release_id,
         )
         return jsonify(body), code
 
@@ -377,14 +397,7 @@ def rate_release(username):
         {
             "releases.id": release_id,
         },
-        {
-            "$push": {
-                "releases.$.ratings": {
-                    "username": username,
-                    "rating": rating
-                }
-            }
-        }
+        {"$push": {"releases.$.ratings": {"username": username, "rating": rating}}},
     )
 
     neo4j.driver.execute_query(
@@ -394,28 +407,29 @@ def rate_release(username):
         MERGE (u)-[rel:RATED]->(r)
         ON CREATE SET rel.rating = $rating
         """,
-        release_id = release["id"],
-        username = username,
-        rating = rating,
+        release_id=release["id"],
+        username=username,
+        rating=rating,
     )
 
     return jsonify(), 201
 
-@bp.route("/<username>/ratings/<release_id>", methods = ["DELETE"])
+
+@bp.route("/<username>/ratings/<release_id>", methods=["DELETE"])
 def unrate_release(username, release_id):
     """
     Endpoint for removing a rating from a user and release.
     """
     if not helper.exists("user", username):
-        body, code = Error.USER_NOT_FOUND.response(username = username)
+        body, code = Error.USER_NOT_FOUND.response(username=username)
         return jsonify(body), code
     if not helper.exists("release", release_id):
-        body, code = Error.RELEASE_NOT_FOUND.response(id = release_id)
+        body, code = Error.RELEASE_NOT_FOUND.response(id=release_id)
         return jsonify(body), code
     if not helper.exists("rating", username, release_id):
         body, code = Error.RATING_NOT_FOUND.response(
-            release_id = release_id,
-            username = username,
+            release_id=release_id,
+            username=username,
         )
         return jsonify(body), code
 
@@ -450,25 +464,26 @@ def unrate_release(username, release_id):
         MATCH (u:User {username: $username})-[r:RATED]->(rel:Release {id: $release_id})
         DELETE r
         """,
-        username = username,
-        release_id = release_id,
+        username=username,
+        release_id=release_id,
     )
 
     return jsonify(), 200
 
-@bp.route("/<username>/follows", methods = ["POST"])
+
+@bp.route("/<username>/follows", methods=["POST"])
 def follow_artist(username):
     """
     Endpoint for following an artist.
     """
     body = request.get_json()
     if not body or "id" not in body:
-        body, code = Error.PROPERTY_NOT_PROVIDED.response(property = "id")
+        body, code = Error.PROPERTY_NOT_PROVIDED.response(property="id")
         return jsonify(body), code
     artist_id = body["id"]
 
     if not helper.exists("user", username):
-        body, code = Error.USER_NOT_FOUND.response(username = username)
+        body, code = Error.USER_NOT_FOUND.response(username=username)
         return jsonify(body), code
 
     artist = mongodb.db.artists.find_one(
@@ -481,13 +496,13 @@ def follow_artist(username):
         },
     )
     if not artist:
-        body, code = Error.ARTIST_NOT_FOUND.response(id = artist_id)
+        body, code = Error.ARTIST_NOT_FOUND.response(id=artist_id)
         return jsonify(body), code
 
     if helper.exists("follow", username, artist_id):
         body, code = Error.FOLLOW_ALREADY_EXISTS.response(
-            username = username,
-            artist_id = artist_id,
+            username=username,
+            artist_id=artist_id,
         )
         return jsonify(body), code
 
@@ -522,27 +537,28 @@ def follow_artist(username):
         MATCH (a:Artist {id: $artist_id})
         MERGE (u)-[:FOLLOWS]->(a)
         """,
-        artist_id = artist_id,
-        username = username,
+        artist_id=artist_id,
+        username=username,
     )
 
     return jsonify(), 201
 
-@bp.route("/<username>/follows/<artist_id>", methods = ["DELETE"])
+
+@bp.route("/<username>/follows/<artist_id>", methods=["DELETE"])
 def unfollow_artist(username, artist_id):
     """
     Endpoint for unfollowing an artist.
     """
     if not helper.exists("user", username):
-        body, code = Error.USER_NOT_FOUND.response(username = username)
+        body, code = Error.USER_NOT_FOUND.response(username=username)
         return jsonify(body), code
     if not helper.exists("artist", artist_id):
-        body, code = Error.ARTIST_NOT_FOUND.response(id = artist_id)
+        body, code = Error.ARTIST_NOT_FOUND.response(id=artist_id)
         return jsonify(body), code
     if not helper.exists("follow", username, artist_id):
         body, code = Error.FOLLOW_NOT_FOUND.response(
-            artist_id = artist_id,
-            username = username,
+            artist_id=artist_id,
+            username=username,
         )
         return jsonify(body), code
 
@@ -575,33 +591,34 @@ def unfollow_artist(username, artist_id):
         MATCH (u:User {username: $username})-[f:FOLLOWS]->(a:Artist {id: $artist_id})
         DELETE f
         """,
-        username = username,
-        artist_id = artist_id,
+        username=username,
+        artist_id=artist_id,
     )
 
     return jsonify(), 200
 
-@bp.route("/<username>/friends", methods = ["POST"])
+
+@bp.route("/<username>/friends", methods=["POST"])
 def befriend_user(username):
     """
     Endpoint for adding a friend.
     """
     body = request.get_json()
     if not body or "username" not in body:
-        body, code = Error.PROPERTY_NOT_PROVIDED.response(property = "username")
+        body, code = Error.PROPERTY_NOT_PROVIDED.response(property="username")
         return jsonify(body), code
 
     friend_username = body["username"]
     if not helper.exists("user", username):
-        body, code = Error.USER_NOT_FOUND.response(username = username)
+        body, code = Error.USER_NOT_FOUND.response(username=username)
         return jsonify(body), code
     if not helper.exists("user", friend_username):
-        body, code = Error.USER_NOT_FOUND.response(username = friend_username)
+        body, code = Error.USER_NOT_FOUND.response(username=friend_username)
         return jsonify(body), code
     if helper.exists("friendship", username, friend_username):
         body, code = Error.FRIENDSHIP_ALREADY_EXISTS.response(
-            username1 = username,
-            username2 = friend_username,
+            username1=username,
+            username2=friend_username,
         )
         return jsonify(body), code
 
@@ -634,27 +651,28 @@ def befriend_user(username):
         MERGE (u1)-[:FRIENDS_WITH]->(u2)
         MERGE (u1)<-[:FRIENDS_WITH]-(u2)
         """,
-        username = username,
-        friend_username = friend_username,
+        username=username,
+        friend_username=friend_username,
     )
 
     return jsonify(), 201
 
-@bp.route("/<username>/friends/<friend_username>", methods = ["DELETE"])
+
+@bp.route("/<username>/friends/<friend_username>", methods=["DELETE"])
 def unfriend_user(username, friend_username):
     """
     Endpoint for removing a friend.
     """
     if not helper.exists("user", username):
-        body, code = Error.USER_NOT_FOUND.response(username = username)
+        body, code = Error.USER_NOT_FOUND.response(username=username)
         return jsonify(body), code
     if not helper.exists("user", friend_username):
-        body, code = Error.USER_NOT_FOUND.response(username = friend_username)
+        body, code = Error.USER_NOT_FOUND.response(username=friend_username)
         return jsonify(body), code
     if not helper.exists("friendship", username, friend_username):
         body, code = Error.FRIENDSHIP_NOT_FOUND.response(
-            username1 = username,
-            username2 = friend_username,
+            username1=username,
+            username2=friend_username,
         )
         return jsonify(body), code
 
@@ -686,8 +704,8 @@ def unfriend_user(username, friend_username):
         MATCH (u1)<-[f2:FRIENDS_WITH]-(u2)
         DELETE f1, f2
         """,
-        username1 = username,
-        username2 = friend_username,
+        username1=username,
+        username2=friend_username,
     )
 
     return jsonify(), 200

@@ -1,0 +1,38 @@
+[project]
+name = "harmonics-api"
+version = "1.0.0"
+description = "API for a music catalog with social media and recommendation features."
+authors = [
+    {name = "Caike dos Santos", email = "caikevsantos@gmail.com"},
+    {name = "Ryan Sakurai", email = "ryansakurai03@gmail.com"},
+    {name = "Vinicius Castro", email = "vinisilvacastro71@gmail.com"}
+]
+readme = "../README.md"
+license = "MIT"
+requires-python = ">=3.13"
+dependencies = [
+    "flask (>=3.1.2,<4.0.0)",
+    "neo4j (>=5.28.2,<6.0.0)",
+    "pymongo (>=4.15.1,<5.0.0)",
+    "python-dotenv (>=1.1.1,<2.0.0)"
+]
+
+[project.urls]
+repository = "https://github.com/ryansakurai/harmonics-api"
+
+[project.scripts]
+api = "harmonics_api.main:main"
+
+[tool.poetry]
+packages = [{include = "harmonics_api", from = "src"}]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = [
+    "black (>=25.9.0,<26.0.0)",
+    "pylint (>=3.3.8,<4.0.0)",
+    "isort (>=6.0.1,<7.0.0)"
+]

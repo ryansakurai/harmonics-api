@@ -1,21 +1,24 @@
 """
 Module for the 'recs/' route.
 """
+
 import random
+
 from flask import Blueprint, jsonify, request
-from harmonics_api.configs import mongodb, neo4j
-from harmonics_api.configs.errors import Error
-from harmonics_api.utils import helper
+
+from ..common import helper, mongodb, neo4j
+from ..common.errors import Error
 
 bp = Blueprint("recs", __name__)
 
-@bp.route("/<username>/artists", methods = ["GET"])
+
+@bp.route("/<username>/artists", methods=["GET"])
 def get_artist_recs_by_genre(username):
     """
     Endpoint for getting artist recommendations by genre.
     """
     if not helper.exists("user", username):
-        body, code = Error.USER_NOT_FOUND.response(username = username)
+        body, code = Error.USER_NOT_FOUND.response(username=username)
         return jsonify(body), code
 
     genre_result = neo4j.driver.execute_query(
@@ -66,7 +69,7 @@ def get_artist_recs_by_genre(username):
             "id": "$_id",
             "name": True,
             "bio": True,
-        }
+        },
     )
 
     response = {
@@ -77,12 +80,13 @@ def get_artist_recs_by_genre(username):
         },
         "by": {
             "genre": most_common_genre,
-        }
+        },
     }
 
     return jsonify(response), 200
 
-@bp.route("/<username>/releases", methods = ["GET"])
+
+@bp.route("/<username>/releases", methods=["GET"])
 def get_release_recs_by_friends(username):
     """
     Endpoint for getting release recommendations by friends' positive reviews.
@@ -99,45 +103,49 @@ def get_release_recs_by_friends(username):
         ORDER BY r.rating DESC
         LIMIT 10
         """,
-        username = username
+        username=username,
     )
 
     results = []
     for record in friends_rating.records:
-        results.append({
-            "friend_username": record["friend_username"],
-            "release_id": record["release_id"],
-            "rating": record["rating"]
-        })
+        results.append(
+            {
+                "friend_username": record["friend_username"],
+                "release_id": record["release_id"],
+                "rating": record["rating"],
+            }
+        )
     if not results:
         body, code = Error.NO_FRIENDS_RATINGS_FOUND.response()
         return jsonify(body), code
 
     result = random.choice(results)
 
-    release_cursor = mongodb.db.artists.aggregate([
-        {
-            "$match": {
-                "releases.id": result["release_id"],
+    release_cursor = mongodb.db.artists.aggregate(
+        [
+            {
+                "$match": {
+                    "releases.id": result["release_id"],
+                },
             },
-        },
-        {
-            "$unwind": "$releases",
-        },
-        {
-            "$match": {
-                "releases.id": result["release_id"],
+            {
+                "$unwind": "$releases",
             },
-        },
-        {
-            "$project": {
-                "_id": False,
-                "id": "$releases.id",
-                "name": "$releases.name",
-                "artist": "$name",
+            {
+                "$match": {
+                    "releases.id": result["release_id"],
+                },
             },
-        },
-    ])
+            {
+                "$project": {
+                    "_id": False,
+                    "id": "$releases.id",
+                    "name": "$releases.name",
+                    "artist": "$name",
+                },
+            },
+        ]
+    )
 
     release_results = tuple(release_cursor)
 
@@ -145,22 +153,20 @@ def get_release_recs_by_friends(username):
         "release": {
             "id": release_results[0]["id"],
             "name": release_results[0]["name"],
-            "artist": release_results[0]["artist"]
+            "artist": release_results[0]["artist"],
         },
-        "by": {
-            "username": result["friend_username"],
-            "rating": result["rating"]
-        }
+        "by": {"username": result["friend_username"], "rating": result["rating"]},
     }
 
     return jsonify(response), 200
 
-@bp.route("/<username>/friends", methods = ["GET"])
+
+@bp.route("/<username>/friends", methods=["GET"])
 def get_friend_recs(username):
     """
     Endpoint for getting friend recommendations.
     """
-    by = request.args.get("by", type = str)
+    by = request.args.get("by", type=str)
     if not by:
         body, code = Error.NO_QUERY_PARAMETER.response(
             parameter="by",
@@ -182,6 +188,7 @@ def get_friend_recs(username):
         return get_friend_recs_by_genre(username)
     return get_friend_recs_by_reviews(username)
 
+
 def get_friend_recs_by_genre(username):
     """
     Endpoint for getting friend recommendations by genre affinity.
@@ -198,7 +205,7 @@ def get_friend_recs_by_genre(username):
     )
 
     if not genre_result.records:
-        body, code = Error.NO_GENRE_DATA_FOUND.response(username = username)
+        body, code = Error.NO_GENRE_DATA_FOUND.response(username=username)
         return jsonify(body), code
 
     most_common_genre = genre_result.records[0]["genre"]
@@ -219,7 +226,9 @@ def get_friend_recs_by_genre(username):
     )
 
     if not recs_result.records:
-        body, code = Error.NO_FRIEND_RECS_FOUND.response(username=username, genre=most_common_genre)
+        body, code = Error.NO_FRIEND_RECS_FOUND.response(
+            username=username, genre=most_common_genre
+        )
         return jsonify(body), code
 
     selected_username = random.choice(recs_result.records)["recommended_user"]
@@ -237,21 +246,20 @@ def get_friend_recs_by_genre(username):
             "bio": {
                 "$ifNull": ["$bio", None],
             },
-        }
+        },
     )
 
     response = {
         "user": {
             "username": user_details["username"],
             "name": user_details["name"],
-            "bio": user_details["bio"]
+            "bio": user_details["bio"],
         },
-        "by": {
-            "genre": most_common_genre
-        }
+        "by": {"genre": most_common_genre},
     }
 
     return jsonify(response), 200
+
 
 def get_friend_recs_by_reviews(username):
     """
@@ -265,7 +273,7 @@ def get_friend_recs_by_reviews(username):
         RETURN rel.id AS release_id, r.rating AS rating
         ORDER BY r.rating DESC
         """,
-        username = username
+        username=username,
     )
 
     rated_releases = []
@@ -273,7 +281,7 @@ def get_friend_recs_by_reviews(username):
         rated_releases.append(record["release_id"])
 
     if not rated_releases:
-        body, code = Error.NO_RATINGS_FOUND.response(username = username)
+        body, code = Error.NO_RATINGS_FOUND.response(username=username)
         return jsonify(body), code
 
     selected_release = random.choice(rated_releases)
@@ -292,13 +300,13 @@ def get_friend_recs_by_reviews(username):
         LIMIT 10
         """,
         release_id=selected_release,
-        username=username
+        username=username,
     )
 
     if not rated_reviews.records:
         body, code = Error.NO_FRIEND_RECS_FOUND.response(
-            username = username,
-            release_id = selected_release,
+            username=username,
+            release_id=selected_release,
         )
         return jsonify(body), code
 
@@ -326,29 +334,31 @@ def get_friend_recs_by_reviews(username):
         body, code = Error.USER_NOT_FOUND.response(username=selected_username)
         return jsonify(body), code
 
-    release_cursor = mongodb.db.artists.aggregate([
-        {
-            "$match": {
-                "releases.id": selected_release,
+    release_cursor = mongodb.db.artists.aggregate(
+        [
+            {
+                "$match": {
+                    "releases.id": selected_release,
+                },
             },
-        },
-        {
-            "$unwind": "$releases",
-        },
-        {
-            "$match": {
-                "releases.id": selected_release,
+            {
+                "$unwind": "$releases",
             },
-        },
-        {
-            "$project": {
-                "_id": False,
-                "id": "$releases.id",
-                "name": "$releases.name",
-                "artist": "$name",
+            {
+                "$match": {
+                    "releases.id": selected_release,
+                },
             },
-        },
-    ])
+            {
+                "$project": {
+                    "_id": False,
+                    "id": "$releases.id",
+                    "name": "$releases.name",
+                    "artist": "$name",
+                },
+            },
+        ]
+    )
 
     release_results = tuple(release_cursor)
 
@@ -356,14 +366,14 @@ def get_friend_recs_by_reviews(username):
         "user": {
             "username": user_details["username"],
             "name": user_details["name"],
-            "bio": user_details["bio"]
+            "bio": user_details["bio"],
         },
         "by": {
             "id": release_results[0]["id"],
             "name": release_results[0]["name"],
             "artist": release_results[0]["artist"],
-            "rating": friend_rating
-        }
+            "rating": friend_rating,
+        },
     }
 
     return jsonify(response), 200
