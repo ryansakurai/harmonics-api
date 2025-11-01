@@ -1,8 +1,17 @@
 package artist
 
+import "github.com/ryansakurai/harmonics-api/internal/model"
+
 type ArtistHandler struct {
+	useCase ArtistUseCases
 }
 
-func New() *ArtistHandler {
-	return &ArtistHandler{}
+type ArtistUseCases interface {
+	GetArtist(artistID string) (model.Artist, error)
+}
+
+func New(useCase ArtistUseCases) *ArtistHandler {
+	return &ArtistHandler{
+		useCase: useCase,
+	}
 }

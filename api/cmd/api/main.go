@@ -8,13 +8,16 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
 
+	artistusecase "github.com/ryansakurai/harmonics-api/internal/use-case/artist"
 	artisthandler "github.com/ryansakurai/harmonics-api/internal/handler/artist"
 	releasehandler "github.com/ryansakurai/harmonics-api/internal/handler/release"
 	userhandler "github.com/ryansakurai/harmonics-api/internal/handler/user"
 )
 
 func main() {
-	artist_handler := artisthandler.New()
+	artist_use_case := artistusecase.New()
+
+	artist_handler := artisthandler.New(artist_use_case)
 	release_handler := releasehandler.New()
 	userhandler := userhandler.New()
 
