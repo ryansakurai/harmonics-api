@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"errors"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -15,25 +14,14 @@ func (h *ArtistHandler) ServeGetArtist(w http.ResponseWriter, r *http.Request) {
 
 	artist, err := h.useCase.GetArtist(artistID)
 	if err != nil {
-		render.Render(w, r, errToRenderer(err))
+		render.Render(w, r, dto.ErrToRenderer(err))
 		return
 	}
 
-	render.Render(w, r, toPayload(artist))
+	render.Render(w, r, toArtistPayload(artist))
 }
 
-func errToRenderer(err error) render.Renderer {
-	var artistNotFound *usecasedto.ArtistNotFound
-
-	switch {
-	case errors.As(err, &artistNotFound):
-		return dto.ErrArtistNotFound(err)
-	default:
-		return nil
-	}
-}
-
-func toPayload(artist usecasedto.Artist) dto.GetArtistPayload {
+func toArtistPayload(artist usecasedto.Artist) dto.GetArtistPayload {
 	releases := make([]dto.ReleasePreview, len(artist.Releases))
 	for i, release := range artist.Releases {
 		releases[i] = dto.ReleasePreview{

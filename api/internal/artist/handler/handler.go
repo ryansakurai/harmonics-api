@@ -10,6 +10,7 @@ type ArtistHandler struct {
 
 type ArtistUseCases interface {
 	GetArtist(artistID string) (usecasedto.Artist, error)
+	GetTracks(artistID string) (usecasedto.Tracks, error)
 }
 
 func New(useCase ArtistUseCases) *ArtistHandler {
