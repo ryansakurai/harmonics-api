@@ -8,18 +8,26 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
 
-	artistusecase "github.com/ryansakurai/harmonics-api/internal/use-case/artist"
-	artisthandler "github.com/ryansakurai/harmonics-api/internal/handler/artist"
-	releasehandler "github.com/ryansakurai/harmonics-api/internal/handler/release"
-	userhandler "github.com/ryansakurai/harmonics-api/internal/handler/user"
+	artisthandler "github.com/ryansakurai/harmonics-api/internal/artist/handler"
+	artistusecase "github.com/ryansakurai/harmonics-api/internal/artist/use-case"
+	followhandler "github.com/ryansakurai/harmonics-api/internal/follow/handler"
+	friendhandler "github.com/ryansakurai/harmonics-api/internal/friend/handler"
+	ratinghandler "github.com/ryansakurai/harmonics-api/internal/rating/handler"
+	recommendationhandler "github.com/ryansakurai/harmonics-api/internal/recommendation/handler"
+	releasehandler "github.com/ryansakurai/harmonics-api/internal/release/handler"
+	userhandler "github.com/ryansakurai/harmonics-api/internal/user/handler"
 )
 
 func main() {
-	artist_use_case := artistusecase.New()
+	artistUseCase := artistusecase.New()
 
-	artist_handler := artisthandler.New(artist_use_case)
-	release_handler := releasehandler.New()
-	userhandler := userhandler.New()
+	artistHandler := artisthandler.New(artistUseCase)
+	releaseHandler := releasehandler.New()
+	userHandler := userhandler.New()
+	friendHandler := friendhandler.New()
+	ratingHandler := ratinghandler.New()
+	followHandler := followhandler.New()
+	recommendationHandler := recommendationhandler.New()
 
 	r := chi.NewRouter()
 
@@ -34,45 +42,45 @@ func main() {
 		})
 
 		r.Route("/artists/{artistID}", func(r chi.Router) {
-			r.Get("/", artist_handler.ServeGetArtist)
-			r.Get("/tracks", artist_handler.ServeGetTracks)
+			r.Get("/", artistHandler.ServeGetArtist)
+			r.Get("/tracks", artistHandler.ServeGetTracks)
 		})
 
 		r.Route("/releases/{releaseID}", func(r chi.Router) {
-			r.Get("/", release_handler.ServeGetRelease)
-			r.Get("/ratings", release_handler.ServeGetRatings)
+			r.Get("/", releaseHandler.ServeGetRelease)
+			r.Get("/ratings", releaseHandler.ServeGetRatings)
 		})
 
 		r.Route("/users", func(r chi.Router) {
-			r.Post("/", userhandler.ServePostUser)
+			r.Post("/", userHandler.ServePostUser)
 
 			r.Route("/{username}", func(r chi.Router) {
-				r.Get("/", userhandler.ServeGetUser)
-				r.Delete("/", userhandler.ServeDeleteUser)
-				r.Patch("/", userhandler.ServePatchUser)
+				r.Get("/", userHandler.ServeGetUser)
+				r.Delete("/", userHandler.ServeDeleteUser)
+				r.Patch("/", userHandler.ServePatchUser)
 
 				r.Route("/friends", func(r chi.Router) {
-					r.Get("/", userhandler.FriendHandler.ServeGetFriends)
-					r.Post("/", userhandler.FriendHandler.ServePostFriend)
-					r.Delete("/{friendUsername}", userhandler.FriendHandler.ServeDeleteFriend)
+					r.Get("/", friendHandler.ServeGetFriends)
+					r.Post("/", friendHandler.ServePostFriend)
+					r.Delete("/{friendUsername}", friendHandler.ServeDeleteFriend)
 				})
 
 				r.Route("/ratings", func(r chi.Router) {
-					r.Get("/", userhandler.RatingHandler.ServeGetRatings)
-					r.Post("/", userhandler.RatingHandler.ServePostRating)
-					r.Delete("/{releaseID}", userhandler.RatingHandler.ServeDeleteRating)
+					r.Get("/", ratingHandler.ServeGetRatings)
+					r.Post("/", ratingHandler.ServePostRating)
+					r.Delete("/{releaseID}", ratingHandler.ServeDeleteRating)
 				})
 
 				r.Route("/follows", func(r chi.Router) {
-					r.Get("/", userhandler.FollowHandler.ServeGetFollows)
-					r.Post("/", userhandler.FollowHandler.ServePostFollow)
-					r.Delete("/{artistID}", userhandler.FollowHandler.ServeDeleteFollow)
+					r.Get("/", followHandler.ServeGetFollows)
+					r.Post("/", followHandler.ServePostFollow)
+					r.Delete("/{artistID}", followHandler.ServeDeleteFollow)
 				})
 
 				r.Route("/recommendations", func(r chi.Router) {
-					r.Get("/artists", userhandler.RecommendationHandler.ServeGetArtists)
-					r.Get("/releases", userhandler.RecommendationHandler.ServeGetReleases)
-					r.Get("/friends", userhandler.RecommendationHandler.ServeGetFriends)
+					r.Get("/artists", recommendationHandler.ServeGetArtists)
+					r.Get("/releases", recommendationHandler.ServeGetReleases)
+					r.Get("/friends", recommendationHandler.ServeGetFriends)
 				})
 			})
 		})
