@@ -1,0 +1,13 @@
+[settings]
+quiet = true
+
+[tools]
+go = "1.26"
+
+[tasks.start]
+run = '''
+#!/usr/bin/env bash
+
+echo "===> Starting server..."
+go run cmd/api/main.go || exit 1
+'''
