@@ -4,6 +4,12 @@ quiet = true
 [tools]
 go = "1.26"
 
+[env]
+MONGODB_USERNAME = "" # Set in mise.local.toml
+MONGODB_PASSWORD = "" # Set in mise.local.toml
+NEO4J_USERNAME = ""   # Set in mise.local.toml
+NEO4J_PASSWORD = ""   # Set in mise.local.toml
+
 [tasks.start]
 run = '''
 #!/usr/bin/env bash
