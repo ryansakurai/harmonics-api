@@ -5,8 +5,8 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
-	"github.com/ryansakurai/harmonics-api/internal/artist/handler/dto"
-	usecasedto "github.com/ryansakurai/harmonics-api/internal/artist/use-case/dto"
+	"github.com/sakuraven/harmonics-api/internal/artist/handler/dto"
+	usecasedto "github.com/sakuraven/harmonics-api/internal/artist/use-case/dto"
 )
 
 func (h *ArtistHandler) ServeGetArtist(w http.ResponseWriter, r *http.Request) {

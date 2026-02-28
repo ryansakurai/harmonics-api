@@ -1,7 +1,7 @@
 package usecase
 
 import (
-	"github.com/ryansakurai/harmonics-api/internal/artist/use-case/dto"
+	"github.com/sakuraven/harmonics-api/internal/artist/use-case/dto"
 )
 
 func (u *ArtistUseCases) GetTracks(artistID string) (dto.Tracks, error) {

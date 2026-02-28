@@ -8,14 +8,14 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
 
-	artisthandler "github.com/ryansakurai/harmonics-api/internal/artist/handler"
-	artistusecase "github.com/ryansakurai/harmonics-api/internal/artist/use-case"
-	followhandler "github.com/ryansakurai/harmonics-api/internal/follow/handler"
-	friendhandler "github.com/ryansakurai/harmonics-api/internal/friend/handler"
-	ratinghandler "github.com/ryansakurai/harmonics-api/internal/rating/handler"
-	recommendationhandler "github.com/ryansakurai/harmonics-api/internal/recommendation/handler"
-	releasehandler "github.com/ryansakurai/harmonics-api/internal/release/handler"
-	userhandler "github.com/ryansakurai/harmonics-api/internal/user/handler"
+	artisthandler "github.com/sakuraven/harmonics-api/internal/artist/handler"
+	artistusecase "github.com/sakuraven/harmonics-api/internal/artist/use-case"
+	followhandler "github.com/sakuraven/harmonics-api/internal/follow/handler"
+	friendhandler "github.com/sakuraven/harmonics-api/internal/friend/handler"
+	ratinghandler "github.com/sakuraven/harmonics-api/internal/rating/handler"
+	recommendationhandler "github.com/sakuraven/harmonics-api/internal/recommendation/handler"
+	releasehandler "github.com/sakuraven/harmonics-api/internal/release/handler"
+	userhandler "github.com/sakuraven/harmonics-api/internal/user/handler"
 )
 
 func main() {

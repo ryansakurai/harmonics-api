@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/render"
-	usecasedto "github.com/ryansakurai/harmonics-api/internal/artist/use-case/dto"
+	usecasedto "github.com/sakuraven/harmonics-api/internal/artist/use-case/dto"
 )
 
 type ErrorResponse struct {

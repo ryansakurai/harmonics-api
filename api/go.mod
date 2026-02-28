@@ -1,4 +1,4 @@
-module github.com/ryansakurai/harmonics-api
+module github.com/sakuraven/harmonics-api
 
 go 1.26.0
 
